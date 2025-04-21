@@ -1,4 +1,6 @@
 package com.example.ordereat.ui.screens.restaurants
 
-class ListRestaurantViewModel {
+import androidx.lifecycle.ViewModel
+
+class ListRestaurantViewModel: ViewModel()  {
 }

@@ -1,95 +1,73 @@
 package com.example.ordereat.ui.navigation
 
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Create
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.ordereat.ui.navigation.NavigationDestination.Companion.toDestination
 import com.example.ordereat.ui.screens.home.HomeScreen
+import com.example.ordereat.ui.screens.order.OrderScreen
+import com.example.ordereat.ui.screens.profil.ProfileScreen
 import com.example.ordereat.ui.screens.restaurants.ListRestaurantScreen
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
 
-    val currentDestination: MainNavigation by remember(navBackStackEntry) {
-        derivedStateOf {
-            navBackStackEntry?.toDestination<MainNavigation>() ?: MainNavigation.startDestination
-        }
-    }
+    val bottomBarScreens = listOf(
+        Screen.ListRestaurant.route,
+        Screen.Order.route,
+        Screen.Profile.route
+    )
+    val showBottomBar = currentRoute in bottomBarScreens
 
-    Scaffold(
-        bottomBar = {
-            BottomNavigationBar(currentDestination = currentDestination) { selectedDestination ->
-                if (currentDestination != selectedDestination) {
-                    navController.navigate(selectedDestination) {
-                        popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                }
-            }
-        }
-    ) { innerPadding ->
+    Box(modifier = Modifier.fillMaxSize()) {
         NavHost(
             navController = navController,
-            startDestination = MainNavigation.startDestination::class.qualifiedName!!,
-            modifier = Modifier.padding(innerPadding)
+            startDestination = Screen.Home.route,
+            modifier = Modifier.fillMaxSize()
         ) {
-            composable<MainNavigation.Home> {
+            composable(Screen.Home.route) {
                 HomeScreen(
-                    onNavigateToSecond = {
-                        navController.navigate(MainNavigation.Second)
+                    onVoirRestaurants = {
+                        navController.navigate(Screen.ListRestaurant.route)
                     }
                 )
             }
-            // Déclaration de la destination Second
-            composable<MainNavigation.Second> {
-                ListRestaurantScreen()
+            composable(Screen.ListRestaurant.route) {
+                ListRestaurantScreen(
+                    viewModel = hiltViewModel(),
+                    onRestaurantClick = {  }
+                )
+            }
+            composable(Screen.Order.route) {
+                OrderScreen(viewModel = hiltViewModel())
+            }
+            composable(Screen.Profile.route) {
+                ProfileScreen(viewModel = hiltViewModel())
             }
         }
-    }
-}
 
-@Composable
-fun BottomNavigationBar(
-    currentDestination: MainNavigation,
-    onItemSelected: (MainNavigation) -> Unit
-) {
-    NavigationBar {
-        val items = listOf(
-            NavigationItem("Accueil", MainNavigation.Home, Icons.Default.Home),
-            NavigationItem("Restaurants", MainNavigation.Second, Icons.Default.Create)
-        )
-
-        items.forEach { item ->
-            NavigationBarItem(
-                selected = currentDestination::class == item.destination::class,
-                onClick = { onItemSelected(item.destination) },
-                icon = { Icon(imageVector = item.icon, contentDescription = item.label) },
-                label = { Text(item.label) }
+        if (showBottomBar) {
+            CustomBottomBar(
+                currentRoute = currentRoute,
+                onTabSelected = { route ->
+                    navController.navigate(route) {
+                        launchSingleTop = true
+                        popUpTo(Screen.ListRestaurant.route) { saveState = true }
+                        restoreState = true
+                    }
+                },
+                modifier = Modifier.align(Alignment.BottomCenter)
             )
         }
     }
 }
-
-data class NavigationItem(
-    val label: String,
-    val destination: MainNavigation,
-    val icon: androidx.compose.ui.graphics.vector.ImageVector
-)
