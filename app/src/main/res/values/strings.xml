@@ -1,4 +1,16 @@
 <resources>
+    <!-- UI Texts -->
     <string name="app_name">OrderEat</string>
     <string name="capital_letter_app_name">ORDER EAT</string>
+    <string name="search_restaurant">Chercher un restaurant</string>
+    <string name="already_restaurant">Déjà dans un restaurant</string>
+    <string name="bottom_bar_restaurant">Restaurant</string>
+    <string name="bottom_bar_order">Commandes</string>
+    <string name="bottom_bar_profil">Profil</string>
+    <string name="restaurant_name">Nom du restaurant</string>
+
+    <!-- content Description  -->
+    <string name="desc_favorites">favoris</string>
+    <string name="desc_location">localisation</string>
+
 </resources>

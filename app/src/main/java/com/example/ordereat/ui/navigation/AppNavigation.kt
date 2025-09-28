@@ -2,6 +2,7 @@ package com.example.ordereat.ui.navigation
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -15,6 +16,9 @@ import com.example.ordereat.ui.screens.order.OrderScreen
 import com.example.ordereat.ui.screens.profil.ProfileScreen
 import com.example.ordereat.ui.screens.restaurants.ListRestaurantScreen
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.systemBars
 
 @Composable
 fun AppNavigation() {
@@ -29,7 +33,7 @@ fun AppNavigation() {
     )
     val showBottomBar = currentRoute in bottomBarScreens
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize().padding( WindowInsets.systemBars.asPaddingValues())) {
         NavHost(
             navController = navController,
             startDestination = Screen.Home.route,
@@ -37,7 +41,7 @@ fun AppNavigation() {
         ) {
             composable(Screen.Home.route) {
                 HomeScreen(
-                    onVoirRestaurants = {
+                    navOnListRestaurant = {
                         navController.navigate(Screen.ListRestaurant.route)
                     }
                 )
